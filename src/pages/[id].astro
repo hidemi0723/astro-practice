@@ -1,0 +1,40 @@
+---
+export async function getStaticPaths() {
+  const res=await fetch("http://astro-wordpress.local/wp-json/wp/v2/posts")
+  const posts=await res.json()
+
+  const paths = posts.map((post) => ({
+    params: { 
+      id: post.id
+    }
+  }))
+  return paths
+}
+
+const { id } = Astro.params
+const res_post = await fetch(`http://astro-wordpress.local/wp-json/wp/v2/posts/${id}`)
+const post = await res_post.json()
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+</head>
+<body>
+    <div class="container max-w-xl mx-auto">
+      <h1 class="text-3xl mt-5" set:html={post.title.rendered} />
+      <div class="content mt-5" set:html={post.content.rendered} />
+
+      <p class="mt-5"><a href="/">戻る</a></p>
+    </div>
+</body>
+</html>
+
+<style is:global>
+.content p {
+  margin-bottom: 1em;
+}
+</style>
